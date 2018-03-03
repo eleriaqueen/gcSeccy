@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 	if (KEYBOARD_Init(keyPress_cb) == 0) ;
 	else 
 	{
-		printf("keyboard initialisation failed\nReturning to loader in:\n");
+		printf("keyboard initialisation failed\n");
 		countdwn(3);
 		return 1;
 	}
