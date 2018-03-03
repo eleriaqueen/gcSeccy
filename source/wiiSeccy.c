@@ -16,13 +16,12 @@ void *Initialise();
 bool quitapp=false;
 
 #define PSO_NAME_SIZE_MAX 12
-#define PSO_NAME_SIZE_MIN 1
 #define PSO_LEGACY_VALUE 5
 
 char* pso_sectionid[] = { "Pinkal", "Redria", "Oran", "Yellowboze", "Whitill", "Viridia", "Greenill", "Skyly", "Bluefull", "Purplenum" };
 
+void countdwn(unsigned int count);
 unsigned int is_str_ascii(char* str);
-int parse_commandline(int argc, char**argv);
 unsigned int pso_strcpt(char* input_str, unsigned int cval);
 
 char b[13] = {0};
@@ -63,12 +62,8 @@ int main(int argc, char **argv) {
 	if (KEYBOARD_Init(keyPress_cb) == 0) ;
 	else 
 	{
-		printf("keyboard initialisation failed\nReturning to loader in\n3... ");
-		sleep(1);
-		printf("2... ");
-		sleep(1);
-		printf("1...");
-		sleep(1);
+		printf("keyboard initialisation failed\nReturning to loader in:\n");
+		countdwn(3);
 		return 1;
 	}
 	
@@ -78,16 +73,19 @@ int main(int argc, char **argv) {
 
 	while(1) {
 
-		VIDEO_WaitVSync();
 		PAD_ScanPads();
 
-		int buttonsDown = PAD_ButtonsDown(0);
+		u32 buttonsDown = PAD_ButtonsDown(0);
 
 		getchar();
 		
-		if ((buttonsDown & WPAD_BUTTON_HOME) | quitapp) {
+		if ((buttonsDown & WPAD_BUTTON_HOME) | quitapp)
+		{
+			countdwn(3);
 			exit(0);
 		}
+		
+		VIDEO_WaitVSync();
 	}
 
 	return 0;
@@ -114,6 +112,16 @@ void * Initialise() {
 
 	return framebuffer;
 
+}
+
+void countdwn(unsigned int count)
+{	
+	printf("Quitting in:\n");
+	for (unsigned int i = (count); i > 0; i--)
+	{
+		printf("%u...\n", i);
+		sleep(1);
+	}
 }
 
 unsigned int pso_strcpt(char* input_str, unsigned int cval)
