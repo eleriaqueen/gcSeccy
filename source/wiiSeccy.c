@@ -62,7 +62,8 @@ int main(int argc, char **argv) {
 	if (KEYBOARD_Init(keyPress_cb) == 0) ;
 	else 
 	{
-		printf("keyboard initialisation failed\n");
+		printf("Keyboard initialisation failed\n");
+		printf("Quitting in:\n");
 		countdwn(3);
 		return 1;
 	}
@@ -81,6 +82,7 @@ int main(int argc, char **argv) {
 		
 		if ((buttonsDown & WPAD_BUTTON_HOME) | quitapp)
 		{
+			printf("Quitting in:\n");
 			countdwn(3);
 			exit(0);
 		}
@@ -116,7 +118,6 @@ void * Initialise() {
 
 void countdwn(unsigned int count)
 {	
-	printf("Quitting in:\n");
 	for (unsigned int i = (count); i > 0; i--)
 	{
 		printf("%u...\n", i);
