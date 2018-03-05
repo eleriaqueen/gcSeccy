@@ -4,8 +4,12 @@
 #include <malloc.h>
 #include <ogcsys.h>
 #include <gccore.h>
-#include <wiiuse/wpad.h>
-#include <wiikeyboard/keyboard.h>
+
+#ifdef HW_RVL
+	#include <wiiuse/wpad.h>
+	#include <wiikeyboard/keyboard.h>
+#endif
+
 #include <unistd.h>
 
 static void *xfb = NULL;
@@ -29,6 +33,7 @@ unsigned int count = 0;
 
 void keyPress_cb( char sym) {
 
+#ifdef HW_RVL
 	if ((sym == KS_Return) && (count > 0))
 	{
 		printf(" = %s\n", pso_sectionid[pso_strcpt(b, PSO_LEGACY_VALUE)]);
@@ -52,13 +57,15 @@ void keyPress_cb( char sym) {
 	}
 	else if ( sym == KS_Escape) quitapp = true;
 	else ;
+#endif
+
 }
 
 int main(int argc, char **argv) {
 
 	xfb = Initialise();
 	
-	
+#ifdef HW_RVL
 	if (KEYBOARD_Init(keyPress_cb) == 0) ;
 	else 
 	{
@@ -67,6 +74,7 @@ int main(int argc, char **argv) {
 		countdwn(3);
 		return 1;
 	}
+#endif
 	
 	printf("---------------------------\n");
 	printf("- Section ID Tool for Wii -\n");
@@ -79,14 +87,14 @@ int main(int argc, char **argv) {
 		u32 buttonsDown = PAD_ButtonsDown(0);
 
 		getchar();
-		
+#ifdef HW_RVL
 		if ((buttonsDown & WPAD_BUTTON_HOME) | quitapp)
 		{
 			printf("Quitting in:\n");
 			countdwn(3);
 			exit(0);
 		}
-		
+#endif
 		VIDEO_WaitVSync();
 	}
 
