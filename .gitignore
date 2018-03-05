@@ -1,4 +1,5 @@
 # Directories
 
-build/
+build_gc/
+build_wii
 release/
