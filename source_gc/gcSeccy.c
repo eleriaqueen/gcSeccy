@@ -22,72 +22,86 @@ char* pso_sectionid[] = { "Pinkal", "Redria", "Oran", "Yellowboze", "Whitill", "
 void countdwn(unsigned int count);
 unsigned int is_str_ascii(char* str);
 unsigned int pso_strcpt(char* input_str, unsigned int cval);
-
-char b[13] = {0};
-
-unsigned int count = 0;
+void printheader();
 
 extern void __SYS_ReadROM(void *buf,u32 len,u32 offset);
 
 int main(int argc, char **argv) {
-	char letter = 'a';
+	char buf[13];
+	memset(buf, 0, sizeof(buf));
+	char letter = 'A';
 	unsigned int c = 0;
-	int flicker = 0;
+	char *secId;
 	
 	xfb = Initialise();
 	
-	printf("---------------------------\n");
-	printf("- Section ID Tool for GC  -\n");
-	printf("---------------------------\n\n");
-	
+	printheader();
+
+	printf("%c", letter);
 	while(1) {
-		if (flicker >= 0)
-		{
-			printf("\b%c", letter);
-			flicker ++;
-			
-			
-		}
-		else if (flicker < 0)
-		{
-			printf("\b_");
-			flicker--;
-		}
-		if (flicker >= 30) flicker = -1;
-		if (flicker < -20) flicker = 0;
 		
 		PAD_ScanPads();
 		u32 buttonsDown = PAD_ButtonsDown(0);
-		if ((buttonsDown & PAD_BUTTON_A) && (c < 12) && (flicker >= 0))
+		
+		if ((buttonsDown & PAD_BUTTON_A) && (c < 12))
 		{
 			printf("%c", letter);
-			b[c] = letter;
-			c++;
-		}
-		else if ((buttonsDown & PAD_BUTTON_A) && (c < 12) && (flicker < 0))
-		{
-			printf("\b%c_", letter);
-			b[c] = letter;
+			buf[c] = letter;
 			c++;
 		}
 		
-		if ((buttonsDown & PAD_BUTTON_START) && (c > 0))
+		if (((buttonsDown & PAD_BUTTON_Y) || (buttonsDown & PAD_BUTTON_X)) && (c > 0))
 		{
-			printf("\b = %s\n", pso_sectionid[pso_strcpt(b, PSO_LEGACY_VALUE)]);
+			printf("\b = ");
+			
+			secId = pso_sectionid[pso_strcpt(buf, PSO_LEGACY_VALUE)];
+			
+			if (strstr(secId, "Pinkal"))
+				printf("\x1b[35;1m");
+			else if (strstr(secId, "Redria"))
+				printf("\x1b[31;1m");
+			else if (strstr(secId, "Oran"))
+				printf("\x1b[33m");
+			else if (strstr(secId, "Yellowboze"))
+				printf("\x1b[33;1m");
+			else if (strstr(secId, "Whitill"))
+				printf("\x1b[37;1m");
+			else if (strstr(secId, "Viridia"))
+				printf("\x1b[32m");
+			else if (strstr(secId, "Greenill"))
+				printf("\x1b[32;1m");
+			else if (strstr(secId, "Skyly"))
+				printf("\x1b[36;1m");
+			else if (strstr(secId, "Bluefull"))
+				printf("\x1b[34m");
+			else if (strstr(secId, "Purplenum"))
+				printf("\x1b[35m");
+			 
+			printf("%s\n", secId);
+			printf("\x1b[39m"); // Restore foreground color
+			printf("%c", letter);
 			c = 0;
+			memset(buf, 0, sizeof(buf));
 		}
 		
 		if ((buttonsDown & PAD_BUTTON_UP) && (letter < 126))
 		{
 			letter++;
 			printf("\b%c", letter);
-			flicker = 0;
 		}
 		if ((buttonsDown & PAD_BUTTON_DOWN) && (letter > 32))
 		{
 			letter--;
 			printf("\b%c", letter);
-			flicker = 0;
+		}
+		
+		if (buttonsDown & PAD_BUTTON_START)
+		{
+			iprintf("\x1b[2J");
+			printheader();
+			c = 0;
+			memset(buf, 0, sizeof(buf));
+			printf("%c", letter);
 		}
 		
 		VIDEO_WaitVSync();
@@ -146,6 +160,21 @@ void * Initialise() {
 
 	return framebuffer;
 
+}
+
+void printheader()
+{
+	printf("--------------------------------\n");
+	printf("-    Section ID Tool for GC    -\n");
+	printf("--------------------------------\n\n");
+	printf("Press [Up] and [Down] to go     \n");
+	printf("    through an ASCII table.     \n\n");
+	printf("[A] memorises a character.      \n\n");
+	printf("Pressing [X] or [Y] will display\n");
+	printf("    the ID PSO would give you   \n");
+	printf("    when creating a character   \n");
+	printf("    with the same name.         \n\n");
+	printf("[Start] clears the screen.      \n\n");
 }
 
 void countdwn(unsigned int count)
