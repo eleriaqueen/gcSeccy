@@ -25,30 +25,57 @@ unsigned int is_str_ascii(char* str);
 unsigned int pso_strcpt(char* input_str, unsigned int cval);
 
 char b[13] = {0};
-unsigned int count = 0;
+unsigned int c = 0;
 
 void keyPress_cb( char sym) {
 
 
-	if ((sym == KS_Return) && (count > 0))
+	if ((sym == KS_Return) && (c > 0))
 	{
-		printf(" = %s\n", pso_sectionid[pso_strcpt(b, PSO_LEGACY_VALUE)]);
-		count = 0;
+		printf(" = ");
+		
+		secId = pso_sectionid[pso_strcpt(b, PSO_LEGACY_VALUE)];
+			
+		if (strstr(secId, "Pinkal"))
+			printf("\x1b[35;1m");
+		else if (strstr(secId, "Redria"))
+			printf("\x1b[31;1m");
+		else if (strstr(secId, "Oran"))
+			printf("\x1b[33m");
+		else if (strstr(secId, "Yellowboze"))
+			printf("\x1b[33;1m");
+		else if (strstr(secId, "Whitill"))
+			printf("\x1b[37;1m");
+		else if (strstr(secId, "Viridia"))
+			printf("\x1b[32m");
+		else if (strstr(secId, "Greenill"))
+			printf("\x1b[32;1m");
+		else if (strstr(secId, "Skyly"))
+			printf("\x1b[36;1m");
+		else if (strstr(secId, "Bluefull"))
+			printf("\x1b[34m");
+		else if (strstr(secId, "Purplenum"))
+			printf("\x1b[35m");
+			 
+			printf("%s\n", secId);
+			printf("\x1b[39m"); // Restore foreground color
+		
+		c = 0;
 		memset(b, 0, sizeof(b));
 	}
-	else if ((sym >= KS_space) && (sym <= KS_asciitilde) && (count < PSO_NAME_SIZE_MAX) )
+	else if ((sym >= KS_space) && (sym <= KS_asciitilde) && (c < PSO_NAME_SIZE_MAX) )
 	{
-		b[count] = sym;
+		b[c] = sym;
 		putchar(sym);
-		count ++;
+		c ++;
 	}
 	else if ( sym == KS_BackSpace)
 	{
-		if (count > 0) 
+		if (c > 0) 
 		{
 			printf("\b \b");
-			count --;
-			b[count] = '\0';
+			c --;
+			b[c] = '\0';
 		}
 	}
 	else if ( sym == KS_Escape) quitapp = true;
