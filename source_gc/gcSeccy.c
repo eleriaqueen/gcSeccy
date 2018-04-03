@@ -33,11 +33,19 @@ int main(int argc, char **argv) {
 	unsigned int c = 0;
 	char *secId;
 	
+	char *down = "\x1b[1B";
+	char *up = "\x1b[1A";
+	char *left = "\b";
+	
 	xfb = Initialise();
 	
 	printheader();
 
-	printf("%c", letter);
+	printf("\n> %c", letter);
+	
+	printf("%s%s%c%s", left, up, letter+1, left);    // Left, Up, Print, Left
+	printf("%s%s%c%s", down, down, letter-1, up);    // Down, Down, Print, Up
+	
 	while(1) {
 		
 		PAD_ScanPads();
@@ -45,13 +53,24 @@ int main(int argc, char **argv) {
 		
 		if ((buttonsDown & PAD_BUTTON_A) && (c < 12))
 		{
+			
+			printf("%s%s %s", left, up, left); // Left, Up, Space, Left
+			printf("%s%s %s", down, down, up); // Down, Down, Space, Up
+			
 			printf("%c", letter);
+			if (letter < 126) printf("%s%s%c%s", left, up, letter+1, left);   // Left, Up, Print, Left
+			else printf("%s%s %s", left, up, left);                           
+			if (letter > 33) printf("%s%s%c%s", down, down, letter-1, up);    // Down, Down, Print, Up
+			else printf("%s%s %s", down, down, up);                           
 			buf[c] = letter;
 			c++;
 		}
 		
 		if (((buttonsDown & PAD_BUTTON_Y) || (buttonsDown & PAD_BUTTON_X)) && (c > 0))
 		{
+			printf("%s%s %s", left, up, left);    // Left, Up, Space, Left
+			printf("%s%s %s", down, down, up);    // Down, Down, Space, Up
+			
 			printf("\b = ");
 			
 			secId = pso_sectionid[pso_strcpt(buf, PSO_LEGACY_VALUE)];
@@ -77,9 +96,18 @@ int main(int argc, char **argv) {
 			else if (strstr(secId, "Purplenum"))
 				printf("\x1b[35m");
 			 
-			printf("%s\n", secId);
+			printf("%s\n\n\n\n%s%s", secId, left, up); // 4 Newlines, then Left Up
 			printf("\x1b[39m"); // Restore foreground color
-			printf("%c", letter);
+			printf("> %c", letter);
+			
+			/*
+				
+			*/
+			if (letter < 126) printf("%s%s%c%s", left, up, letter+1, left);   // Left, Up, Print, Left
+			else printf("%s%s %s", left, up, left);                           // Left, Up, Space, Left
+			if (letter > 33) printf("%s%s%c%s", down, down, letter-1, up);    // Down, Down, Print, Up
+			else printf("%s%s %s", down, down, up);                           // Down, Down, Space, Up
+			
 			c = 0;
 			memset(buf, 0, sizeof(buf));
 		}
@@ -88,20 +116,32 @@ int main(int argc, char **argv) {
 		{
 			letter++;
 			printf("\b%c", letter);
+			
+			if (letter < 126) printf("%s%s%c%s", left, up, letter+1, left);   // Left, Up, Print, Left
+			else printf("%s%s %s", left, up, left);                           // Left, Up, Space, Left
+			
+			printf("\x1b[2B%c\x1b[1A", letter-1);  // Down, Down, Print, Up
+			
 		}
 		if ((buttonsDown & PAD_BUTTON_DOWN) && (letter > 32))
 		{
 			letter--;
 			printf("\b%c", letter);
+			
+			printf("\b\x1b[1A%c\b", letter+1); // Left, Up, Print, Left
+			
+			if (letter > 33) printf("%s%s%c%s", down, down, letter-1, up);    // Down, Down, Print, Up
+			else printf("%s%s %s", down, down, up);                           // Down, Down, Space, Up
 		}
 		
 		if (buttonsDown & PAD_BUTTON_START)
 		{
-			iprintf("\x1b[2J");
+			iprintf("\x1b[2J"); // Console_Clear
 			printheader();
+			
 			c = 0;
 			memset(buf, 0, sizeof(buf));
-			printf("%c", letter);
+			printf("\n> %c", letter);
 		}
 		
 		VIDEO_WaitVSync();
