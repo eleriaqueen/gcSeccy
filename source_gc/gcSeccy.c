@@ -37,14 +37,22 @@ int main(int argc, char **argv) {
 	char *up = "\x1b[1A";
 	char *left = "\b";
 	
+	#define LUPL() printf("%s%s%c%s", left, up, letter+1, left) // Left, Up, Print, Left
+	#define DDPU() printf("%s%s%c%s", down, down, letter-1, up) // Down, Down, Print, Up
+	
+	#define LUSL() printf("%s%s %s", left, up, left) // Left, Up, Space, Left
+	#define DDSU() printf("%s%s %s", down, down, up) // Down, Down, Space, Up
+	
+	#define CON_CLR() printf("\x1b[2J") // Console_Clear
+	
 	xfb = Initialise();
 	
 	printheader();
 
 	printf("\n> %c", letter);
 	
-	printf("%s%s%c%s", left, up, letter+1, left);    // Left, Up, Print, Left
-	printf("%s%s%c%s", down, down, letter-1, up);    // Down, Down, Print, Up
+	LUPL();
+	DDPU();
 	
 	while(1) {
 		
@@ -54,22 +62,28 @@ int main(int argc, char **argv) {
 		if ((buttonsDown & PAD_BUTTON_A) && (c < 12))
 		{
 			
-			printf("%s%s %s", left, up, left); // Left, Up, Space, Left
-			printf("%s%s %s", down, down, up); // Down, Down, Space, Up
+			LUSL();
+			DDSU();
 			
 			printf("%c", letter);
-			if (letter < 126) printf("%s%s%c%s", left, up, letter+1, left);   // Left, Up, Print, Left
-			else printf("%s%s %s", left, up, left);                           
-			if (letter > 33) printf("%s%s%c%s", down, down, letter-1, up);    // Down, Down, Print, Up
-			else printf("%s%s %s", down, down, up);                           
+			
+			if (letter < 126) 
+				LUPL();
+			else
+				LUSL();
+				                         
+			if (letter > 33) 
+				DDPU();
+			else
+				DDSU();                           
 			buf[c] = letter;
 			c++;
 		}
 		
 		if (((buttonsDown & PAD_BUTTON_Y) || (buttonsDown & PAD_BUTTON_X)) && (c > 0))
 		{
-			printf("%s%s %s", left, up, left);    // Left, Up, Space, Left
-			printf("%s%s %s", down, down, up);    // Down, Down, Space, Up
+			LUSL();
+			DDSU();
 			
 			printf("\b = ");
 			
@@ -96,17 +110,19 @@ int main(int argc, char **argv) {
 			else if (strstr(secId, "Purplenum"))
 				printf("\x1b[35m");
 			 
-			printf("%s\n\n\n\n%s%s", secId, left, up); // 4 Newlines, then Left Up
+			printf("%s\n\n\n\n%s%s", secId, left, up); // secId, 4 Newlines, then Left Up
 			printf("\x1b[39m"); // Restore foreground color
 			printf("> %c", letter);
 			
-			/*
+			if (letter < 126)
+				LUPL();
+			else
+				LUSL();
 				
-			*/
-			if (letter < 126) printf("%s%s%c%s", left, up, letter+1, left);   // Left, Up, Print, Left
-			else printf("%s%s %s", left, up, left);                           // Left, Up, Space, Left
-			if (letter > 33) printf("%s%s%c%s", down, down, letter-1, up);    // Down, Down, Print, Up
-			else printf("%s%s %s", down, down, up);                           // Down, Down, Space, Up
+			if (letter > 33)
+				DDPU();
+			else
+				DDSU();
 			
 			c = 0;
 			memset(buf, 0, sizeof(buf));
@@ -117,10 +133,12 @@ int main(int argc, char **argv) {
 			letter++;
 			printf("\b%c", letter);
 			
-			if (letter < 126) printf("%s%s%c%s", left, up, letter+1, left);   // Left, Up, Print, Left
-			else printf("%s%s %s", left, up, left);                           // Left, Up, Space, Left
+			if (letter < 126)
+				LUPL();
+			else
+				LUSL();
 			
-			printf("\x1b[2B%c\x1b[1A", letter-1);  // Down, Down, Print, Up
+			DDPU();
 			
 		}
 		if ((buttonsDown & PAD_BUTTON_DOWN) && (letter > 32))
@@ -128,15 +146,18 @@ int main(int argc, char **argv) {
 			letter--;
 			printf("\b%c", letter);
 			
-			printf("\b\x1b[1A%c\b", letter+1); // Left, Up, Print, Left
+			LUPL();
 			
-			if (letter > 33) printf("%s%s%c%s", down, down, letter-1, up);    // Down, Down, Print, Up
-			else printf("%s%s %s", down, down, up);                           // Down, Down, Space, Up
+			if (letter > 33)
+				DDPU();
+			else 
+				DDSU();
 		}
 		
 		if (buttonsDown & PAD_BUTTON_START)
 		{
-			iprintf("\x1b[2J"); // Console_Clear
+			CON_CLR();
+			
 			printheader();
 			
 			c = 0;
@@ -204,17 +225,17 @@ void * Initialise() {
 
 void printheader()
 {
-	printf("--------------------------------\n");
-	printf("-    Section ID Tool for GC    -\n");
-	printf("--------------------------------\n\n");
-	printf("Press [Up] and [Down] to go     \n");
-	printf("    through an ASCII table.     \n\n");
-	printf("[A] memorises a character.      \n\n");
-	printf("Pressing [X] or [Y] will display\n");
-	printf("    the ID PSO would give you   \n");
-	printf("    when creating a character   \n");
-	printf("    with the same name.         \n\n");
-	printf("[Start] clears the screen.      \n\n");
+	printf("----------------------------------------------------\n");
+	printf("-              Section ID Tool for GC              -\n");
+	printf("----------------------------------------------------\n\n");
+	printf("Press [Up] or [Down] to move through an ASCII table \n");
+	printf("                                                    \n");
+	printf("[A] memorises a letter/character.                   \n");
+	printf("                                                    \n");
+	printf("[X] and [Y] print the Section ID which corresponds  \n");
+	printf("to what you memorised.                              \n");
+	printf("                                                    \n");
+	printf("[Start] clears the screen.                          \n\n");
 }
 
 void countdwn(unsigned int count)
