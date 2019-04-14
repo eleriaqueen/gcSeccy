@@ -17,6 +17,14 @@ bool quitapp=false;
 #define PSO_NAME_SIZE_MAX 12
 #define PSO_LEGACY_VALUE 5
 
+//Console Version Type Helpers
+// #define GC_CPU_VERSION01 0x00083214
+// #define GC_CPU_VERSION02 0x00083410
+// #ifndef mfpvr
+// #define mfpvr()  ({unsigned int rval; asm volatile("mfpvr %0" : "=r" (rval)); rval;})
+// #endif
+// #define is_gamecube() (((mfpvr() == GC_CPU_VERSION01)||((mfpvr() == GC_CPU_VERSION02))))
+
 char* pso_sectionid[] = { "Pinkal", "Redria", "Oran", "Yellowboze", "Whitill", "Viridia", "Greenill", "Skyly", "Bluefull", "Purplenum" };
 
 void countdwn(unsigned int count);
@@ -37,11 +45,11 @@ int main(int argc, char **argv) {
 	char *up = "\x1b[1A";
 	char *left = "\b";
 	
-	#define LUPL() printf("%s%s%c%s", left, up, letter+1, left) // Left, Up, Print, Left
-	#define DDPU() printf("%s%s%c%s", down, down, letter-1, up) // Down, Down, Print, Up
+	#define LUPL() printf("%s%s%c%s", left, up, letter+1, left) // Left, Up, PrintChar, Left
+	#define DDPU() printf("%s%s%c%s", down, down, letter-1, up) // Down, Down, PrintChar, Up
 	
-	#define LUSL() printf("%s%s %s", left, up, left) // Left, Up, Space, Left
-	#define DDSU() printf("%s%s %s", down, down, up) // Down, Down, Space, Up
+	#define LUSL() printf("%s%s %s", left, up, left) // Left, Up, PrintSpace, Left
+	#define DDSU() printf("%s%s %s", down, down, up) // Down, Down, PrintSpace, Up
 	
 	#define CON_CLR() printf("\x1b[2J") // Console_Clear
 	
@@ -49,7 +57,7 @@ int main(int argc, char **argv) {
 	
 	printheader();
 
-	printf("\n> %c", letter);
+	printf("\n              > %c", letter);
 	
 	LUPL();
 	DDPU();
@@ -89,6 +97,7 @@ int main(int argc, char **argv) {
 			
 			secId = pso_sectionid[pso_strcpt(buf, PSO_LEGACY_VALUE)];
 			
+			/*
 			if (strstr(secId, "Pinkal"))
 				printf("\x1b[35;1m");
 			else if (strstr(secId, "Redria"))
@@ -109,10 +118,11 @@ int main(int argc, char **argv) {
 				printf("\x1b[34m");
 			else if (strstr(secId, "Purplenum"))
 				printf("\x1b[35m");
+			*/
 			 
 			printf("%s\n\n\n\n%s%s", secId, left, up); // secId, 4 Newlines, then Left Up
-			printf("\x1b[39m"); // Restore foreground color
-			printf("> %c", letter);
+			// printf("\x1b[39m"); // Restore foreground color
+			printf("              > %c", letter);
 			
 			if (letter < 126)
 				LUPL();
@@ -162,10 +172,8 @@ int main(int argc, char **argv) {
 			
 			c = 0;
 			memset(buf, 0, sizeof(buf));
-			printf("\n> %c", letter);
+			printf("\n              > %c", letter);
 		}
-		
-		VIDEO_WaitVSync();
 	}
 
 	return 0;
@@ -182,6 +190,7 @@ void * Initialise() {
 	__SYS_ReadROM(IPLInfo,256,0);
 	
 	PAD_ScanPads();
+
 	// L Trigger held down ignores the fact that there's a component cable plugged in.
 	if(VIDEO_HaveComponentCable() && !(PAD_ButtonsDown(0) & PAD_TRIGGER_L)) {
 		if((strstr(IPLInfo,"PAL")!=NULL)) 
@@ -213,29 +222,36 @@ void * Initialise() {
 	console_init(framebuffer,20,20,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
 	
 	VIDEO_Configure(rmode);
+
+	/*** Set the framebuffer to be displayed at next VBlank ***/
 	VIDEO_SetNextFramebuffer(framebuffer);
+
 	VIDEO_SetBlack(FALSE);
+
+	/*** Update the video for next vblank ***/
 	VIDEO_Flush();
-	VIDEO_WaitVSync();
+
+	VIDEO_WaitVSync();				/*** Wait for VBL ***/
 	if(rmode->viTVMode&VI_NON_INTERLACE) VIDEO_WaitVSync();
 
 	return framebuffer;
-
 }
 
 void printheader()
-{
-	printf("----------------------------------------------------\n");
-	printf("-              Section ID Tool for GC              -\n");
-	printf("----------------------------------------------------\n\n");
-	printf("Press [Up] or [Down] to move through an ASCII table \n");
-	printf("                                                    \n");
-	printf("[A] memorises a letter/character.                   \n");
-	printf("                                                    \n");
-	printf("[X] and [Y] print the Section ID which corresponds  \n");
-	printf("to what you memorised.                              \n");
-	printf("                                                    \n");
-	printf("[Start] clears the screen.                          \n\n");
+{	
+	// 80 characters
+	// printf("123456789 123456789 123456789 123456789 123456789 123456789 123456789  123456789 \n");
+	printf("              ---------------------------------------------------                \n");
+	printf("              -              Section ID Tool for GC             -                \n");
+	printf("              ---------------------------------------------------                \n\n");
+	printf("              Press [Up] or [Down] to move through an ASCII table                \n");
+	printf("                                                                                 \n");
+	printf("              [A] memorises a letter/character.                                  \n");
+	printf("                                                                                 \n");
+	printf("              [X] and [Y] print the Section ID which corresponds                 \n");
+	printf("              to what you memorised.                                             \n");
+	printf("                                                                                 \n");
+	printf("              [Start] clears the screen.                                         \n\n");
 }
 
 void countdwn(unsigned int count)
