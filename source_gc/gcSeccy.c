@@ -174,6 +174,7 @@ int main(int argc, char **argv) {
 			memset(buf, 0, sizeof(buf));
 			printf("\n              > %c", letter);
 		}
+		VIDEO_WaitVSync();
 	}
 
 	return 0;
