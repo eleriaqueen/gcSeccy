@@ -16,9 +16,9 @@ include $(DEVKITPPC)/wii_rules
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
 #TARGET		:=	release/$(notdir $(CURDIR))
-TARGET		:=  release/wiiSeccy
+TARGET		:=  release_wii/gcSeccy
 BUILD		:=	build_wii
-SOURCES		:=	source_wii
+SOURCES		:=	source_gc
 DATA		:=	data  
 INCLUDES	:=
 

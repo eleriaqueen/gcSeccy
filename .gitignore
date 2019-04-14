@@ -2,4 +2,5 @@
 
 build_gc/
 build_wii
-release/
+release_gc/
+release_wii/
