@@ -104,6 +104,9 @@ int main(int argc, char **argv) {
 			else
 				DDSU();  
 			
+			printf("%s", left);
+			printf("%c", letter);
+
 			buf[c-1] = '\0';
 			c--;
 		}
