@@ -87,6 +87,26 @@ int main(int argc, char **argv) {
 			buf[c] = letter;
 			c++;
 		}
+
+		if ((buttonsDown & PAD_BUTTON_B) && (c > 0))
+		{
+			printf("%s%s %s%s",left, up, left, down);
+			printf("%s %s%s", down, left, up);
+			printf(" %s", left);
+
+			if (letter < 126) 
+				LUPL();
+			else
+				LUSL();
+				                         
+			if (letter > 33) 
+				DDPU();
+			else
+				DDSU();  
+			
+			buf[c-1] = '\0';
+			c--;
+		}
 		
 		if (((buttonsDown & PAD_BUTTON_Y) || (buttonsDown & PAD_BUTTON_X)) && (c > 0))
 		{
