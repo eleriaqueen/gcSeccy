@@ -268,14 +268,12 @@ void printheader()
 	printf("              ---------------------------------------------------                \n");
 	printf("              -              Section ID Tool for GC             -                \n");
 	printf("              ---------------------------------------------------                \n\n");
-	printf("              Press [Up] or [Down] to move through an ASCII table                \n");
 	printf("                                                                                 \n");
 	printf("              [A] memorises a letter/character.                                  \n");
-	printf("                                                                                 \n");
 	printf("              [X] and [Y] print the Section ID which corresponds                 \n");
 	printf("              to what you memorised.                                             \n");
-	printf("                                                                                 \n");
-	printf("              [Start] clears the screen.                                         \n\n");
+	printf("              [Start] clears the screen.                                         \n");
+	printf("              [B] deletes last input letter/character.                           \n\n");
 }
 
 void countdwn(unsigned int count)
