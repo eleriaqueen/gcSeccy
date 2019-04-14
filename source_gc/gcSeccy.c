@@ -210,10 +210,21 @@ int main(int argc, char **argv)
 		VIDEO_WaitVSync();
 
 #ifdef __wii__
-		if ((buttonsDown & WPAD_BUTTON_HOME) | quitapp)
+		if ((buttonsDown & WPAD_BUTTON_HOME) || (buttonsDown & PAD_TRIGGER_Z) || quitapp)
 		{
-			printf("Quitting in:\n");
-			countdwn(3);
+			CON_CLR();
+			printf("Shutdown in... 3...\n");
+			sleep(1);
+			countdwn(2);
+			exit(0);
+		}
+#else
+		if ((buttonsDown & PAD_TRIGGER_Z))
+		{
+			CON_CLR();
+			printf("Shutdown in... 3...\n");
+			sleep(1);
+			countdwn(2);
 			exit(0);
 		}
 #endif
@@ -230,44 +241,9 @@ void *Initialise()
 	VIDEO_Init();
 	PAD_Init();
 
-	static char IPLInfo[256];
-	__SYS_ReadROM(IPLInfo, 256, 0);
-
 	PAD_ScanPads();
 
-#ifdef __wii__
 	rmode = VIDEO_GetPreferredMode(NULL);
-#elif __gc__
-
-	// L Trigger held down ignores the fact that there's a component cable plugged in.
-	if (VIDEO_HaveComponentCable() && !(PAD_ButtonsDown(0) & PAD_TRIGGER_L))
-	{
-		if ((strstr(IPLInfo, "PAL") != NULL))
-		{
-			rmode = &TVEurgb60Hz480Prog; //Progressive 480p
-		}
-		else
-		{
-			rmode = &TVNtsc480Prog; //Progressive 480p
-		}
-	}
-	else
-	{
-		//try to use the IPL region
-		if (strstr(IPLInfo, "PAL") != NULL)
-		{
-			rmode = &TVPal576IntDfScale; //PAL
-		}
-		else if (strstr(IPLInfo, "NTSC") != NULL)
-		{
-			rmode = &TVNtsc480IntDf; //NTSC
-		}
-		else
-		{
-			rmode = VIDEO_GetPreferredMode(NULL); //Last mode used
-		}
-	}
-#endif
 
 	framebuffer = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
 	console_init(framebuffer, 20, 20, rmode->fbWidth, rmode->xfbHeight, rmode->fbWidth * VI_DISPLAY_PIX_SZ);
@@ -307,7 +283,7 @@ void countdwn(unsigned int count)
 {
 	for (unsigned int i = (count); i > 0; i--)
 	{
-		printf("%u...\n", i);
+		printf("               %u...\n", i);
 		sleep(1);
 	}
 }
