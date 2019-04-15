@@ -270,13 +270,14 @@ void printheader()
 	// printf("123456789 123456789 123456789 123456789 123456789 123456789 123456789  123456789 \n");
 	printf("              ---------------------------------------------------                \n");
 	printf("              -              Section ID Tool for GC             -                \n");
-	printf("              ---------------------------------------------------                \n\n");
+	printf("              ---------------------------------------------------                \n");
 	printf("                                                                                 \n");
 	printf("              [A] memorises a letter/character.                                  \n");
-	printf("              [X] and [Y] print the Section ID which corresponds                 \n");
-	printf("              to what you memorised.                                             \n");
+	printf("              [B] deletes last input letter/character.                           \n");
+	printf("              [X] and [Y] print your Section ID                                  \n");
 	printf("              [Start] clears the screen.                                         \n");
-	printf("              [B] deletes last input letter/character.                           \n\n");
+	printf("              [Z] Exits the app.                                                 \n\n");
+	
 }
 
 void countdwn(unsigned int count)
