@@ -21,17 +21,9 @@ bool quitapp = false;
 #define PSO_NAME_SIZE_MAX 12
 #define PSO_LEGACY_VALUE 5
 
-//Console Version Type Helpers
-// #define GC_CPU_VERSION01 0x00083214
-// #define GC_CPU_VERSION02 0x00083410
-// #ifndef mfpvr
-// #define mfpvr()  ({unsigned int rval; asm volatile("mfpvr %0" : "=r" (rval)); rval;})
-// #endif
-// #define is_gamecube() (((mfpvr() == GC_CPU_VERSION01)||((mfpvr() == GC_CPU_VERSION02))))
-
 char *pso_sectionid[] = {"Pinkal", "Redria", "Oran", "Yellowboze", "Whitill", "Viridia", "Greenill", "Skyly", "Bluefull", "Purplenum"};
 
-void countdwn(unsigned int count);
+void countdown(unsigned int count);
 unsigned int is_str_ascii(char *str);
 unsigned int pso_strcpt(char *input_str, unsigned int cval);
 void printheader();
@@ -61,7 +53,7 @@ int main(int argc, char **argv)
 	xfb = Initialise();
 
 #ifdef __wii__
-	// This function initialises the attached controllers
+	// This function initialises attached controllers
 	WPAD_Init();
 #endif
 
@@ -215,7 +207,7 @@ int main(int argc, char **argv)
 			CON_CLR();
 			printf("Shutdown in... 3...\n");
 			sleep(1);
-			countdwn(2);
+			countdown(2);
 			exit(0);
 		}
 #else
@@ -224,7 +216,7 @@ int main(int argc, char **argv)
 			CON_CLR();
 			printf("Shutdown in... 3...\n");
 			sleep(1);
-			countdwn(2);
+			countdown(2);
 			exit(0);
 		}
 #endif
@@ -280,7 +272,7 @@ void printheader()
 	
 }
 
-void countdwn(unsigned int count)
+void countdown(unsigned int count)
 {
 	for (unsigned int i = (count); i > 0; i--)
 	{
